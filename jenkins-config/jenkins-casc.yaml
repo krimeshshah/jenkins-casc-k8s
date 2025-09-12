@@ -1,0 +1,75 @@
+jenkins:
+  systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin\n\n"
+
+  numExecutors: 0
+  mode: NORMAL
+
+  nodes:
+    - permanent:
+        name: "static-agent"
+        remoteFS: "/home/jenkins"
+        numExecutors: 4
+        launcher:
+          inbound:
+            workDirSettings:
+              disabled: true
+              failIfWorkDirIsMissing: false
+              internalDir: "remoting"
+              workDirPath: "/tmp"
+
+  slaveAgentPort: 50000
+
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: ${JENKINS_ADMIN_ID}
+          password: ${JENKINS_ADMIN_PASSWORD}
+
+  
+  # Authorization strategy
+  authorizationStrategy:
+    globalMatrix:
+      entries:
+        - user: 
+            name: admin
+            permissions:
+              - "Overall/Administer"
+        - userOrGroup: 
+            name: builder
+            permissions:
+              - "Job/Build"
+              - "Job/Read"
+    
+unclassified:
+  # Optional other global settings
+  location:
+    url:  "http://172.17.0.1:8080"
+  # For CSRF protection, crumb issuer, etc., depending on your setup
+  # crumbIssuer:
+  #   standard:
+  #     excludeClientIPFromCrumb: false
+  # remotingSecurity:
+  #     enabled: true
+  # queueItemAuthenticator:
+  #   authenticators:
+  #     - global:
+  #         strategy: triggeringUsersAuthorizationStrategy
+
+# tool:
+#   git:
+#     installations:
+#       - name: git
+#         home: /usr/local/bin/git
+
+
+    # github:
+    #   apiUrl: "https://api.github.com"
+    #   githubWebUri: "https://github.com"
+    #   clientId: "${GITHUB_OAUTH_CLIENT_ID}"
+    #   clientSecret: "${GITHUB_OAUTH_CLIENT_SECRET}"   # Could be loaded via credentials or env vars
+    #   oauthScopes:
+    #     - "read:org"
+    #     - "user:email"
+
+

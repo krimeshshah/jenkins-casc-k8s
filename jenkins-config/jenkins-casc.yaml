@@ -1,7 +1,7 @@
 jenkins:
   systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin\n\n"
 
-  numExecutors: 0
+  numExecutors: 4
   mode: NORMAL
 
   nodes:
@@ -25,6 +25,16 @@ jenkins:
       users:
         - id: ${JENKINS_ADMIN_ID}
           password: ${JENKINS_ADMIN_PASSWORD}
+        - id: builder
+          password: builder123
+    # github:
+    #   apiUrl: "https://api.github.com"
+    #   githubWebUri: "https://github.com"
+    #   clientId: "${GITHUB_OAUTH_CLIENT_ID}"
+    #   clientSecret: "${GITHUB_OAUTH_CLIENT_SECRET}"   # Could be loaded via credentials or env vars
+    #   oauthScopes:
+    #     - "read:org"
+    #     - "user:email"
 
   
   # Authorization strategy
@@ -35,7 +45,7 @@ jenkins:
             name: admin
             permissions:
               - "Overall/Administer"
-        - userOrGroup: 
+        - user: 
             name: builder
             permissions:
               - "Job/Build"
@@ -45,16 +55,81 @@ unclassified:
   # Optional other global settings
   location:
     url:  "http://172.17.0.1:8080"
-  # For CSRF protection, crumb issuer, etc., depending on your setup
-  # crumbIssuer:
-  #   standard:
-  #     excludeClientIPFromCrumb: false
+  # url: "https://jenkins.ukinfosec.info"  
+  
   # remotingSecurity:
   #     enabled: true
-  # queueItemAuthenticator:
-  #   authenticators:
-  #     - global:
-  #         strategy: triggeringUsersAuthorizationStrategy
+  
+
+# jobs:
+#     - script: >
+#         job('seed-all-dsl-jobs') {
+#           description('Seed job to create/update all DSL jobs from dsljobs/*.groovy')
+#           scm {
+#             git {
+#               remote {
+#                 url('https://github.com/your-org/your-dsl-repo.git')
+#                 credentialsId('git-creds-id')
+#               }
+#               branch('*/main')
+#             }
+#           }
+          triggers {
+            scm('H/15 * * * *')  // optional: poll schedule to automatically detect new DSL files
+          }
+#           steps {
+#             jobDsl {
+#               targets('dslJobs/**/*.groovy')
+#               removedJobAction('DELETE')      // optionally remove jobs when DSL definitions are removed
+#               removedViewAction('DELETE')
+#               sandbox(true)
+#             }
+#           }
+#         }
+
+security:
+   queueItemAuthenticator:
+     authenticators:
+     - global:
+        strategy: triggeringUsersAuthorizationStrategy
+  #  remotingSecurity:
+  #     enabled: true           
+
+jobs:
+  - script: >
+      pipelineJob('seed-job') {
+        description('This seed job loads all DSL jobs from dslJobs/**/*.groovy')
+
+        definition {
+          cps {
+            script("""\
+              pipeline {
+                agent any
+                stages {
+                  stage('Prepare DSL Files') {
+                    steps {
+                      sh 'cp -r /var/jenkins_home/dslJobs .'
+                    }
+                  }
+                  stage('Generate DSL Jobs') {
+                    steps {
+                      jobDsl(
+                        targets: 'dslJobs/**/*.groovy',
+                        removedJobAction: 'DELETE',
+                        removedViewAction: 'DELETE',
+                        lookupStrategy: 'JENKINS_ROOT',
+                        sandbox: true
+                      )
+                    }
+                  }
+                }
+              }
+            """)
+            sandbox(true)
+          }
+        }
+      }
+
 
 # tool:
 #   git:
@@ -63,13 +138,6 @@ unclassified:
 #         home: /usr/local/bin/git
 
 
-    # github:
-    #   apiUrl: "https://api.github.com"
-    #   githubWebUri: "https://github.com"
-    #   clientId: "${GITHUB_OAUTH_CLIENT_ID}"
-    #   clientSecret: "${GITHUB_OAUTH_CLIENT_SECRET}"   # Could be loaded via credentials or env vars
-    #   oauthScopes:
-    #     - "read:org"
-    #     - "user:email"
+    
 
 

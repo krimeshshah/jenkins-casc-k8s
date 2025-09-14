@@ -19,6 +19,7 @@ pipeline-github-lib:latest
 pipeline-stage-view:latest
 slack:latest
 ssh-slaves:latest
+strict-crumb-issuer:2.1.1
 timestamper:latest
 workflow-aggregator:latest
 ws-cleanup:latest

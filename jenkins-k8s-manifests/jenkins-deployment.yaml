@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-casc
+  namespace: jenkins    # you can use another namespace or create this one
+  labels:
+    app: jenkins-casc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins-casc
+  template:
+    metadata:
+      labels:
+        app: jenkins-casc
+    spec:
+      # To allow Jenkins to write to /var/jenkins_home as non-root user (optional)
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      containers:
+        - name: jenkins
+          image: asia-south1-docker.pkg.dev/mykubeproj-3390/jenkins-docker/jenkins-casc-k8s:1.0.0
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "500Mi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"
+          env:
+            - name: JENKINS_ADMIN_ID
+              value: "admin"
+            - name: JENKINS_ADMIN_PASSWORD
+              value: "password"
+            - name: JAVA_OPTS
+              value: "-Djenkins.install.runSetupWizard=false"
+            - name: CASC_JENKINS_CONFIG
+              value: "/var/jenkins_home/casc.yaml"
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: jnlp
+              containerPort: 50000
+          readinessProbe:
+            httpGet:
+              path: /login
+              port: 8080
+            initialDelaySeconds: 60   # Jenkins startup can be slow
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+
+    
+      #     volumeMounts:
+      #       - name: jenkins-home
+      #         mountPath: "/var/jenkins_home"
+      # volumes:
+      #   - name: jenkins-home
+      #     emptyDir: {}
+          # persistentVolumeClaim:
+          #   claimName: jenkins-home-pvc    # you need to create this PVC
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: jenkins-casc
+#   namespace: jenkins
+# spec:
+#   type: LoadBalancer   # or NodePort, depending on your cluster
+#   selector:
+#     app: jenkins-casc
+#   ports:
+#     - name: http
+#       port: 8080
+#       targetPort: 8080
+#     - name: jnlp
+#       port: 50000
+#       targetPort: 50000

@@ -54,8 +54,8 @@ jenkins:
 unclassified:
   # Optional other global settings
   location:
-    url:  "http://172.17.0.1:8080"
-  # url: "https://jenkins.ukinfosec.info"  
+    url: "https://jenkins.ks.ukinfosec.info" # Required for the image to spinned up to access jenkins over internet
+    # url:  "http://172.17.0.1:8080" # UnComment it when need to build image to test in localmachine
   
   # remotingSecurity:
   #     enabled: true
@@ -68,15 +68,15 @@ unclassified:
 #           scm {
 #             git {
 #               remote {
-#                 url('https://github.com/your-org/your-dsl-repo.git')
+#                 url('https://github.com/krimeshshah/jenkins-casc-k8s.git')
 #                 credentialsId('git-creds-id')
 #               }
-#               branch('*/main')
+#               branch('*/develop')
 #             }
 #           }
-          triggers {
-            scm('H/15 * * * *')  // optional: poll schedule to automatically detect new DSL files
-          }
+#           triggers {
+#             scm('H/15 * * * *')  // optional: poll schedule to automatically detect new DSL files
+#           }
 #           steps {
 #             jobDsl {
 #               targets('dslJobs/**/*.groovy')

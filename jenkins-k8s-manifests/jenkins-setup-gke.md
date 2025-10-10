@@ -37,17 +37,26 @@
 
 #### 2. Create Global IP  (i.e public IP) on gce 
 
-     gcloud compute addresses create jenkins-ip --global
+     gcloud compute addresses create jenkins-ip --global   
+
+    Note:  “Global” means public IP, it can be used with a global load balancer (like GKE Ingress on HTTP/HTTPS). It will be reserved at the project level and shows up under vpc network --> External IP
 
 #### 3. Create A record on domain register site for the registered domain against the global IP created
 
+#### 4. Create Ingress controller in GCP
+
+      gcloud container clusters update <your-cluster> \
+          --update-addons=HttpLoadBalancing=ENABLED
+
+    Note: GKE Autopilot does not create an ingress controller by default. By enabling --addons=HttpLoadBalancing, GKE installs the GLBC (GCP HTTP Load Balancer controller), which works with Ingress objects of class gce, not nginx
     
 #### 4. Crete Ingress resource.
         Ingress resource yaml file available in jenkins-k8s manifest file.
 
+
         k apply -f ingress.yaml
 
-#####  Note: In gce, annotation for ingress class, creates the ingress load balancer on gc which also creaed neg to backend services to offload ther equest comming on load balancer.
+#####  Note: In gce, annotation for ingressclass resource, creates the ingress load balancer on gce which also creates neg to backend services to offload ther equest comming on load balancer.
 
 #### 5. Backend config Resource
 
@@ -55,7 +64,11 @@
 
       k apply -f gke-jenkins-backend-config.yaml
 
-#####  Note: This backend config resource is more specific to gke loadbalancer as loadbalancer has its own healthcheck resource which validates the readiness of backend service by testing the backend config resource.
+     
+#####  Note: 
+           1. In order to create and successfully work this backendconfig resource, make sure backendconfigs.cloud.google.com crd already exists on gke cluster. In case of gke auto pilot cluster this crd by default exists.
+
+           2.This backend config resource is more specific to gke loadbalancer as loadbalancer has its own healthcheck resource which validates the readiness of backend service by testing the backend config resource.
 
     
 

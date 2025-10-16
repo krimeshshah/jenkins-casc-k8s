@@ -1,5 +1,7 @@
+
 jenkins:
   systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin\n\n"
+  
 
   numExecutors: 4
   mode: NORMAL
@@ -20,122 +22,144 @@ jenkins:
   slaveAgentPort: 50000
 
   securityRealm:
-    local:
-      allowsSignup: false
-      users:
-        - id: ${JENKINS_ADMIN_ID}
-          password: ${JENKINS_ADMIN_PASSWORD}
-        - id: builder
-          password: builder123
-    # github:
-    #   apiUrl: "https://api.github.com"
-    #   githubWebUri: "https://github.com"
-    #   clientId: "${GITHUB_OAUTH_CLIENT_ID}"
-    #   clientSecret: "${GITHUB_OAUTH_CLIENT_SECRET}"   # Could be loaded via credentials or env vars
-    #   oauthScopes:
-    #     - "read:org"
-    #     - "user:email"
-
+    # local:
+    #   allowsSignup: false
+    #   users:
+    #     - id: ${JENKINS_ADMIN_ID}
+    #       password: ${JENKINS_ADMIN_PASSWORD}
+    #     - id: builder
+    #       password: builder123
+    github:
+      githubWebUri: "https://github.com"
+      githubApiUri: "https://api.github.com"
+      clientID: "Ov23liGvjdBxX3Z7hBZg"
+      clientSecret: "${GITHUB_OAUTH_CLIENT_SECRET}"   # Could be loaded via credentials or env vars
+      oauthScopes:  "read:org,user:email"
+ 
   
   # Authorization strategy
   authorizationStrategy:
     globalMatrix:
-      entries:
-        - user: 
-            name: admin
-            permissions:
-              - "Overall/Administer"
-        - user: 
-            name: builder
-            permissions:
-              - "Job/Build"
-              - "Job/Read"
-    
+       entries:
+         - user: 
+             name: krimeshshah
+             permissions:
+               - "Overall/Administer"
+         - user: 
+             name: builder
+             permissions:
+               - "Job/Build"
+               - "Job/Read"
+    # projectMatrix:
+    #   entries:
+    #   - user:
+    #       name: "krimeshshah"  # Replace this with the GitHub username of the user
+    #       permissions:
+    #         - "Overall/Administer"
+    #   - group:
+    #       name: "orgname*teamname1"
+    #       permissions:
+    #       - "Overall/Administer"
+    #   - group:
+    #       name: "orgname*teamname2"
+    #       permissions:          
+    #       - "Job/Build"
+    #       - "Job/Cancel"
+    #       - "Job/Read"
+    #       - "Overall/Read"          
+    #       - "View/Read" 
+
+
 unclassified:
   # Optional other global settings
   location:
-    url: "https://jenkins.ks.ukinfosec.info" # Required for the image to spinned up to access jenkins over internet
+    url: "https://jenkins-eks.ks.ukinfosec.info" # Required for the image to spinned up to access jenkins over internet
     # url:  "http://172.17.0.1:8080" # UnComment it when need to build image to test in localmachine
   
-  # remotingSecurity:
-  #     enabled: true
-  
+jobs:
+    - script: >
+        job('seed-all-dsl-jobs') {
+          description('Seed job to create/update all DSL jobs from dsljobs/*.groovy')
+          scm {
+            git {
+              remote {
+                url('https://github.com/krimeshshah/jenkins-casc-k8s.git')
+                credentials('github-pat')
+              }
+              branch('*/develop')
+            }
+          }
+          triggers {
+            scm('H/15 * * * *')  // optional: poll schedule to automatically detect new DSL files
+          }
+          steps {
+            jobDsl {
+              targets('dslJobs/**/*.groovy')
+              removedJobAction('DELETE')      // optionally remove jobs when DSL definitions are removed
+              removedViewAction('DELETE')
+              sandbox(true)
+            }
+          }
+        }
 
-# jobs:
-#     - script: >
-#         job('seed-all-dsl-jobs') {
-#           description('Seed job to create/update all DSL jobs from dsljobs/*.groovy')
-#           scm {
-#             git {
-#               remote {
-#                 url('https://github.com/krimeshshah/jenkins-casc-k8s.git')
-#                 credentialsId('git-creds-id')
-#               }
-#               branch('*/develop')
-#             }
-#           }
-#           triggers {
-#             scm('H/15 * * * *')  // optional: poll schedule to automatically detect new DSL files
-#           }
-#           steps {
-#             jobDsl {
-#               targets('dslJobs/**/*.groovy')
-#               removedJobAction('DELETE')      // optionally remove jobs when DSL definitions are removed
-#               removedViewAction('DELETE')
-#               sandbox(true)
-#             }
-#           }
-#         }
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              id: "github-pat"
+              username: "krimeshshah"
+              password: "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"
+              description: "Krimeshshah personal access token"
+
 
 security:
    queueItemAuthenticator:
      authenticators:
      - global:
         strategy: triggeringUsersAuthorizationStrategy
-  #  remotingSecurity:
-  #     enabled: true           
 
-jobs:
-  - script: >
-      pipelineJob('seed-job') {
-        description('This seed job loads all DSL jobs from dslJobs/**/*.groovy')
+# jobs:
+#   - script: >
+#       pipelineJob('seed-job') {
+#         description('This seed job loads all DSL jobs from dslJobs/**/*.groovy')
 
-        definition {
-          cps {
-            script("""\
-              pipeline {
-                agent any
-                stages {
-                  stage('Prepare DSL Files') {
-                    steps {
-                      sh 'cp -r /var/jenkins_home/dslJobs .'
-                    }
-                  }
-                  stage('Generate DSL Jobs') {
-                    steps {
-                      jobDsl(
-                        targets: 'dslJobs/**/*.groovy',
-                        removedJobAction: 'DELETE',
-                        removedViewAction: 'DELETE',
-                        lookupStrategy: 'JENKINS_ROOT',
-                        sandbox: true
-                      )
-                    }
-                  }
-                }
-              }
-            """)
-            sandbox(true)
-          }
-        }
-      }
+#         definition {
+#           cps {
+#             script("""\
+#               pipeline {
+#                 agent any
+#                 stages {
+#                   stage('Prepare DSL Files') {
+#                     steps {
+#                       sh 'cp -r /var/jenkins_home/dslJobs .'
+#                     }
+#                   }
+#                   stage('Generate DSL Jobs') {
+#                     steps {
+#                       jobDsl(
+#                         targets: 'dslJobs/**/*.groovy',
+#                         removedJobAction: 'DELETE',
+#                         removedViewAction: 'DELETE',
+#                         lookupStrategy: 'JENKINS_ROOT',
+#                         sandbox: true
+#                       )
+#                     }
+#                   }
+#                 }
+#               }
+#             """)
+#             sandbox(true)
+#           }
+#         }
+#       }
 
 
-# tool:
-#   git:
-#     installations:
-#       - name: git
-#         home: /usr/local/bin/git
+tool:
+  git:
+    installations:
+      - name: git
+        home: /usr/local/bin/git
 
 
     

@@ -5,8 +5,8 @@ metadata:
   namespace: jenkins
   labels:
     app: jenkins-casc
-  annotations:
-    cloud.google.com/backend-config: '{"default": "jenkins-backendconfig"}'
+  # annotations:
+  #   cloud.google.com/backend-config: '{"default": "jenkins-backendconfig"}'
 spec:
   type: ClusterIP   # Required for GCE ingress
   selector:

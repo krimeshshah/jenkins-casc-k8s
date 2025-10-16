@@ -21,7 +21,8 @@ spec:
         runAsUser: 1000
       containers:
         - name: jenkins
-          image: asia-south1-docker.pkg.dev/mykubeproj-3390/jenkins-docker/jenkins-casc-k8s:1.0.0
+        #  image: asia-south1-docker.pkg.dev/mykubeproj-3390/jenkins-docker/jenkins-casc-k8s:1.0.0 ## GkE image registry
+          image: 806153319059.dkr.ecr.us-east-1.amazonaws.com/jenkins/jenkins-k8s:1.4.0 ## AWS image registry
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -35,6 +36,8 @@ spec:
               value: "admin"
             - name: JENKINS_ADMIN_PASSWORD
               value: "password"
+            - name: GITHUB_OAUTH_CLIENT_SECRET
+              value: "42aadf12a602902968168632d04b9f3fcf962478"
             - name: JAVA_OPTS
               value: "-Djenkins.install.runSetupWizard=false"
             - name: CASC_JENKINS_CONFIG

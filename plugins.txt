@@ -17,6 +17,7 @@ matrix-auth:latest
 pam-auth:latest
 pipeline-github-lib:latest
 pipeline-stage-view:latest
+role-strategy:777.v4fe2599cb_f48
 slack:latest
 ssh-slaves:latest
 strict-crumb-issuer:2.1.1

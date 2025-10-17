@@ -22,7 +22,7 @@ spec:
       containers:
         - name: jenkins
         #  image: asia-south1-docker.pkg.dev/mykubeproj-3390/jenkins-docker/jenkins-casc-k8s:1.0.0 ## GkE image registry
-          image: 806153319059.dkr.ecr.us-east-1.amazonaws.com/jenkins/jenkins-k8s:1.4.0 ## AWS image registry
+          image: 806153319059.dkr.ecr.us-east-1.amazonaws.com/jenkins/jenkins-k8s:1.5.0 ## AWS image registry
           imagePullPolicy: IfNotPresent
           resources:
             requests:

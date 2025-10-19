@@ -22,7 +22,7 @@ spec:
       containers:
         - name: jenkins
         #  image: asia-south1-docker.pkg.dev/mykubeproj-3390/jenkins-docker/jenkins-casc-k8s:1.0.0 ## GkE image registry
-          image: 806153319059.dkr.ecr.us-east-1.amazonaws.com/jenkins/jenkins-k8s:1.4.0 ## AWS image registry
+          image: 806153319059.dkr.ecr.us-east-1.amazonaws.com/jenkins/jenkins-k8s:1.5.0 ## AWS image registry
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -32,12 +32,15 @@ spec:
               cpu: "1000m"
               memory: "2Gi"
           env:
-            - name: JENKINS_ADMIN_ID
-              value: "admin"
-            - name: JENKINS_ADMIN_PASSWORD
-              value: "password"
+            # - name: JENKINS_ADMIN_ID
+            #   value: "admin"
+            # - name: JENKINS_ADMIN_PASSWORD
+            #   value: "password"
             - name: GITHUB_OAUTH_CLIENT_SECRET
-              value: "42aadf12a602902968168632d04b9f3fcf962478"
+              valueFrom:
+                secretKeyRef:
+                  name: jenkins-ghoauth-secrets
+                  key: GITHUB_OAUTH_CLIENT_SECRET
             - name: JAVA_OPTS
               value: "-Djenkins.install.runSetupWizard=false"
             - name: CASC_JENKINS_CONFIG
@@ -62,23 +65,4 @@ spec:
       #         mountPath: "/var/jenkins_home"
       # volumes:
       #   - name: jenkins-home
-      #     emptyDir: {}
-          # persistentVolumeClaim:
-          #   claimName: jenkins-home-pvc    # you need to create this PVC
-# ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: jenkins-casc
-#   namespace: jenkins
-# spec:
-#   type: LoadBalancer   # or NodePort, depending on your cluster
-#   selector:
-#     app: jenkins-casc
-#   ports:
-#     - name: http
-#       port: 8080
-#       targetPort: 8080
-#     - name: jnlp
-#       port: 50000
-#       targetPort: 50000
+

@@ -1,13 +1,13 @@
-pipelineJob('QA_Build') {
+pipelineJob('DEV_Build') {
   definition {
     cpsScm {
       scm {
         git {
           remote { url('https://github.com/krimeshshah/jenkins-casc-k8s.git') }
-          branch('*/develop')
+          branch('*/main')
         }
       }
-      scriptPath('pipelines/QA-Build.groovy')   // tells Jenkins where Jenkinsfile lives
+      scriptPath('pipelines/Dev-Build.groovy')   // tells Jenkins where Jenkinsfile lives
     }
   }
 }

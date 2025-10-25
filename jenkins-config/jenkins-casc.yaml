@@ -1,41 +1,50 @@
-
 jenkins:
   systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin\n\n"
-  
 
-  numExecutors: 4
+  numExecutors: 0
   mode: NORMAL
 
-  nodes:
-    - permanent:
-        name: "static-agent"
-        remoteFS: "/home/jenkins"
-        numExecutors: 4
-        launcher:
-          inbound:
-            workDirSettings:
-              disabled: true
-              failIfWorkDirIsMissing: false
-              internalDir: "remoting"
-              workDirPath: "/tmp"
+  # nodes: []
+
+  clouds:
+    - kubernetes:
+        name: "kubernetes"
+        serverUrl: "https://kubernetes.default.svc.cluster.local"
+        namespace: "jenkins"
+        jenkinsUrl: "http://jenkins-service.jenkins.svc.cluster.local:8080"
+        jenkinsTunnel: "jenkins-service.jenkins.svc.cluster.local:50000"
+        containerCapStr: "10"
+        maxRequestsPerHostStr: "32"
+        templates:
+          - name: "jnlp-agent"
+            label: "k8s-agent"
+            serviceAccount: "jenkins"
+            yamlMergeStrategy: "override"
+            containers:
+              - name: "jnlp"
+                image: "jenkins/inbound-agent:latest"
+                ttyEnabled: true
+                command: ""
+                args: ""
+                resourceRequestCpu: "100m"
+                resourceRequestMemory: "256Mi"
+                resourceLimitCpu: "500m"
+                resourceLimitMemory: "512Mi"
+            # volumes:
+            #   - emptyDirVolume:
+            #       mountPath: "/home/jenkins/agent"
+            idleMinutes: 5
+            instanceCap: 5
 
   slaveAgentPort: 50000
 
   securityRealm:
-    # local:
-    #   allowsSignup: false
-    #   users:
-    #     - id: ${JENKINS_ADMIN_ID}
-    #       password: ${JENKINS_ADMIN_PASSWORD}
-    #     - id: builder
-    #       password: builder123
     github:
       githubWebUri: "https://github.com"
       githubApiUri: "https://api.github.com"
       clientID: "Ov23liGvjdBxX3Z7hBZg"
       clientSecret: "${GITHUB_OAUTH_CLIENT_SECRET}"   # Could be loaded via credentials or env vars
       oauthScopes:  "read:org,user:email"
- 
   
   # Authorization strategy
   authorizationStrategy:
@@ -70,16 +79,18 @@ jenkins:
     #       - "View/Read" 
 
 
+
 unclassified:
   # Optional other global settings
   location:
     url: "https://jenkins-eks.ks.ukinfosec.info" # Required for the image to spinned up to access jenkins over internet
     # url:  "http://172.17.0.1:8080" # UnComment it when need to build image to test in localmachine
-  
+
 jobs:
     - script: >
         job('seed-all-dsl-jobs') {
           description('Seed job to create/update all DSL jobs from dsljobs/*.groovy')
+          label('k8s-agent')
           scm {
             git {
               remote {
@@ -111,7 +122,11 @@ credentials:
               username: "krimeshshah"
               password: "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"
               description: "Krimeshshah personal access token"
-
+          # - aws:
+          #     id: "aws-ecr-creds"
+          #     accessKey: "${AWS_ACCESS_KEY_ID}"
+          #     secretKey: "${AWS_SECRET_ACCESS_KEY}"
+          #     description: "AWS ECR Access"
 
 security:
    queueItemAuthenticator:
@@ -119,49 +134,8 @@ security:
      - global:
         strategy: triggeringUsersAuthorizationStrategy
 
-# jobs:
-#   - script: >
-#       pipelineJob('seed-job') {
-#         description('This seed job loads all DSL jobs from dslJobs/**/*.groovy')
-
-#         definition {
-#           cps {
-#             script("""\
-#               pipeline {
-#                 agent any
-#                 stages {
-#                   stage('Prepare DSL Files') {
-#                     steps {
-#                       sh 'cp -r /var/jenkins_home/dslJobs .'
-#                     }
-#                   }
-#                   stage('Generate DSL Jobs') {
-#                     steps {
-#                       jobDsl(
-#                         targets: 'dslJobs/**/*.groovy',
-#                         removedJobAction: 'DELETE',
-#                         removedViewAction: 'DELETE',
-#                         lookupStrategy: 'JENKINS_ROOT',
-#                         sandbox: true
-#                       )
-#                     }
-#                   }
-#                 }
-#               }
-#             """)
-#             sandbox(true)
-#           }
-#         }
-#       }
-
-
 tool:
   git:
     installations:
       - name: git
         home: /usr/bin/git
-
-
-    
-
-

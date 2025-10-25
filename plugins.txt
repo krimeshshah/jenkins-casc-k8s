@@ -1,6 +1,8 @@
 ant:latest
 antisamy-markup-formatter:latest
 authorize-project:latest
+aws-credentials:latest
+blueocean:latest
 build-timeout:latest
 cloudbees-folder:latest
 configuration-as-code:latest
@@ -11,12 +13,15 @@ github-branch-source:latest
 github-oauth:latest
 gradle:latest
 job-dsl:latest
+kubernetes:latest
+kubernetes-cli:latest
 ldap:latest
 mailer:latest
 matrix-auth:latest
 pam-auth:latest
 pipeline-github-lib:latest
 pipeline-stage-view:latest
+pipeline-utility-steps:latest
 role-strategy:777.v4fe2599cb_f48
 slack:latest
 ssh-slaves:latest

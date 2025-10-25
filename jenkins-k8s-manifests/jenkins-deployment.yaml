@@ -10,6 +10,8 @@ spec:
   selector:
     matchLabels:
       app: jenkins-casc
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -17,12 +19,13 @@ spec:
     spec:
       # To allow Jenkins to write to /var/jenkins_home as non-root user (optional)
       securityContext:
+        runAsNonRoot: true
         fsGroup: 1000
         runAsUser: 1000
       containers:
         - name: jenkins
         #  image: asia-south1-docker.pkg.dev/mykubeproj-3390/jenkins-docker/jenkins-casc-k8s:1.0.0 ## GkE image registry
-          image: 806153319059.dkr.ecr.us-east-1.amazonaws.com/jenkins/jenkins-k8s:1.5.0 ## AWS image registry
+          image: 806153319059.dkr.ecr.us-east-1.amazonaws.com/jenkins/jenkins-k8s:1.6.0@sha256:6a26d8cf7d35e2ce0f005a138f83fc6c360843dfe29234823661dff2b7b5aca0 ## AWS image registry
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -41,6 +44,11 @@ spec:
                 secretKeyRef:
                   name: jenkins-ghoauth-secrets
                   key: GITHUB_OAUTH_CLIENT_SECRET
+            # - name: GITHUB_OAUTH_CLIENT_SECRET
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: jenkins-ghoauth-secrets
+            #       key: GITHUB_OAUTH_CLIENT_SECRET
             - name: JAVA_OPTS
               value: "-Djenkins.install.runSetupWizard=false"
             - name: CASC_JENKINS_CONFIG

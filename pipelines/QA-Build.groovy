@@ -1,7 +1,7 @@
 @Library('my-shared-library@feature/ks/shared-library') _
 
 pipline{
-    agent(label "k8s-agent")
+    agent{label "k8s-agent"}
     stages {
         stage("hellowrld-test") {
             step {

@@ -4,7 +4,7 @@ pipline{
     agent{label "k8s-agent"}
     stages {
         stage("hellowrld-test") {
-            step {
+            steps {
                 helloWorld()
             }
         }

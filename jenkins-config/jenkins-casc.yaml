@@ -79,12 +79,24 @@ jenkins:
     #       - "View/Read" 
 
 
-
 unclassified:
   # Optional other global settings
   location:
     url: "https://jenkins-eks.ks.ukinfosec.info" # Required for the image to spinned up to access jenkins over internet
     # url:  "http://172.17.0.1:8080" # UnComment it when need to build image to test in localmachine
+  globalLibraries:
+    libraries:
+      - name: "my-shared-library"
+        defaultVersion: "develop" # Or a specific tag/commit hash
+        implicit: false # Set to true to load implicitly in all pipelines, false to require @Library annotation
+        allowVersionOverride: true
+        includeInChangesets: true
+        retriever:
+          modernSCM:
+            scm:
+              git:
+                remote: "https://github.com/krimeshshah/jenkins-casc-k8s.git"
+                credentialsId: "github-pat"
 
 jobs:
     - script: >

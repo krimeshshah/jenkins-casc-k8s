@@ -1,4 +1,4 @@
-def getLatestCommitShortSha(String repoUrl, String branch = 'develop') {
+def getLatestCommitShortSha(String repoUrl = 'https://github.com/krimeshshah/python-flaskapp.git', String branch = 'develop') {
     echo "Fetching latest commit SHA from ${repoUrl} (${branch})"
 
     // Clone repo into temp dir

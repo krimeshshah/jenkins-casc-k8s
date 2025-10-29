@@ -1,12 +1,18 @@
-def buildAndPushImage(Map args) {
+
+def call(Map args) {
     def repoUrl         = args.repoUrl
-    def branch          = args.branch ?: 'main'
+    def branch          = args.branch ?: 'develop'
     def awsRegion       = args.awsRegion ?: 'us-east-1'
     def ecrRepo         = args.ecrRepo
     def awsCredentialsId = args.awsCredentialsId
-    def imageTag        = args.imageTag ?: "latest"
+    def imageTag        = args.imageTag
+    
+    if (!imageTag) {
+        echo "No imageTag provided. Fetching latest short SHA from repo..."
+        imageTag = utils.getLatestCommitShortSha(repoUrl, branch)
+    }
 
-    echo "Starting build for ${repoUrl} (${branch})"
+    echo "Starting build for ${repoUrl} (${branch}) → Tag: ${imageTag}"
 
     // Checkout source
     git branch: branch, url: repoUrl
@@ -24,5 +30,5 @@ def buildAndPushImage(Map args) {
         dockerImage.push('latest')
     }
 
-    echo "Image pushed: ${ecrRepo}:${imageTag}"
+    echo "✅ Image pushed: ${ecrRepo}:${imageTag}"
 }

@@ -30,7 +30,7 @@ pipeline {
         stage('Build and Push to ECR') {
             steps {
                 // Directly call shared library step
-                qabuild(
+                qaBuild(
                     repoUrl: REPO_URL,
                     branch: params.BRANCH,
                     awsRegion: AWS_REGION,

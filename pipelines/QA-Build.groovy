@@ -22,7 +22,7 @@ pipeline {
     environment {
         REPO_URL    = 'https://github.com/krimeshshah/python-flaskapp.git'
         AWS_REGION  = 'us-east-1'
-        ECR_REPO    = '806153319059.dkr.ecr.us-east-1.amazonaws.com/flaskapp'
+        ECR_REPO    = '806153319059.dkr.ecr.us-east-1.amazonaws.com/pyproject/flaskapp'
         AWS_CRED_ID = 'aws-ecr-jenkins-creds'
      }
 

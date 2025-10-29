@@ -1,4 +1,4 @@
-@Library('my-shared-library@feature/ks/shared-library') _
+@Library('my-shared-library@feature/ks/flaskapp-build') _
 
 // pipeline {
 //     agent {label "k8s-agent"}

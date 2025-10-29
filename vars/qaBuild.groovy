@@ -1,7 +1,7 @@
 
 def call(Map args) {
     def repoUrl         = args.repoUrl
-    def branch          = args.branch ?: 'develop'
+    def branch          = args.branch ?: 'master'
     def awsRegion       = args.awsRegion ?: 'us-east-1'
     def ecrRepo         = args.ecrRepo
     def awsCredentialsId = args.awsCredentialsId

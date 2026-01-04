@@ -17,18 +17,29 @@ def call(Map args) {
     // Checkout source
     git branch: branch, url: repoUrl
 
-    // Build Docker image
-    def dockerImage = docker.build("${ecrRepo}:${imageTag}")
+    // // Build Docker image We can use this command with docker if we usr dind or docker package installation in agen template
+    // def dockerImage = docker.build("${ecrRepo}:${imageTag}")
 
     // Push to ECR
     withAWS(region: awsRegion, credentials: awsCredentialsId) {
         sh """
-            aws ecr get-login-password --region ${awsRegion} \
-            | docker login --username AWS --password-stdin ${ecrRepo.split('/')[0]}
+            mkdir -p /kaniko/.docker
+            // aws ecr get-login-password --region ${awsRegion} \
+            // | docker login --username AWS --password-stdin ${ecrRepo.split('/')[0]}
         """
-        dockerImage.push()
-        dockerImage.push('latest')
-    }
+        // dockerImage.push()
+        // dockerImage.push('latest')
+    
+        container('kaniko') {
+            sh """
+            /kaniko/executor \
+                --context ${WORKSPACE} \
+                --dockerfile ${WORKSPACE}/Dockerfile \
+                --destination ${ecrRepo}:${imageTag} \
+                --cleanup
+            """
+        }
+
 
     echo "✅ Image pushed: ${ecrRepo}:${imageTag}"
 }

@@ -7,7 +7,7 @@ pipelineJob('QA_Build') {
     cpsScm {
       scm {
         git {
-          remote { url('https://github.com/krimeshshah/jenkins-casc-k8s.git') }
+          remote { url('https://github.com/krimeshshah/python-flaskapp') }
           branch('*/develop')
         }
       }

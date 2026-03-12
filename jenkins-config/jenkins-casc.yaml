@@ -132,7 +132,7 @@ credentials:
           - usernamePassword:
               id: "github-pat"
               username: "krimeshshah"
-              password: "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"
+              password: "${GH_PAT}"
               description: "Krimeshshah personal access token"
           # - aws:
           #     id: "aws-ecr-creds"

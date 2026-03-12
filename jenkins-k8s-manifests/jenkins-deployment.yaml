@@ -18,6 +18,7 @@ spec:
         app: jenkins-casc
     spec:
       # To allow Jenkins to write to /var/jenkins_home as non-root user (optional)
+      serviceAccountName: jenkins
       securityContext:
         runAsNonRoot: true
         fsGroup: 1000

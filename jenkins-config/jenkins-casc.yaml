@@ -156,7 +156,11 @@ credentials:
           - usernamePassword:
               id: "github-pat"
               username: "krimeshshah"
+<<<<<<< HEAD
               password: "${GH_PAT}"
+=======
+              password: "${GITHUB_PAT}"
+>>>>>>> 9b5cbf1 (Removing plaintext ghpat)
               description: "Krimeshshah personal access token"
           # - aws:
           #     id: "aws-ecr-creds"

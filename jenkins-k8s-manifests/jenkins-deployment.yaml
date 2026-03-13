@@ -45,11 +45,11 @@ spec:
                 secretKeyRef:
                   name: jenkins-ghoauth-secrets
                   key: GITHUB_OAUTH_CLIENT_SECRET
-            # - name: GITHUB_OAUTH_CLIENT_SECRET
-            #   valueFrom:
-            #     secretKeyRef:
-            #       name: jenkins-ghoauth-secrets
-            #       key: GITHUB_OAUTH_CLIENT_SECRET
+            - name: GITHUB_PAT
+              valueFrom:
+                secretKeyRef:
+                  name: github-pat-secret
+                  key: GITHUB_PAT
             - name: JAVA_OPTS
               value: "-Djenkins.install.runSetupWizard=false"
             - name: CASC_JENKINS_CONFIG

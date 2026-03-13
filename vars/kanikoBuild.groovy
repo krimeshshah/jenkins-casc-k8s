@@ -12,7 +12,10 @@ def call(Map config = [:]) {
             --dockerfile ${dockerfile} \
             --destination ${image}:${tag} \
             --cache=true \
-            --cache-dir=/kaniko/cache
+            --cache-dir=/kaniko/cache \
+            --insecure \
+            --skip-tls-verify \
+            --insecure-registry registry.kube-system
         """
     }
 }

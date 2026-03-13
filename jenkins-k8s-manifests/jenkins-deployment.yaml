@@ -26,7 +26,7 @@ spec:
       containers:
         - name: jenkins
         #  image: asia-south1-docker.pkg.dev/mykubeproj-3390/jenkins-docker/jenkins-casc-k8s:1.0.0 ## GkE image registry
-          image: jenkins:1.0.0
+          image: jenkins:2.0.0
           imagePullPolicy: IfNotPresent
           resources:
             requests:

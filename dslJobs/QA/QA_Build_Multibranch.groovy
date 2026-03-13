@@ -1,14 +1,33 @@
-multibranchPipelineJob('QA_Apps') {
+organizationFolder('QA_Apps') {
+
     description('QA pipelines for all application repositories')
 
-    branchSources {
-        git {
-            id('qa-apps')
-            remote('https://github.com/krimeshshah')
+    organizations {
+        github {
+
+            repoOwner('krimeshshah')
             credentialsId('github-pat')
 
-            // Limit repos Jenkins will scan
-            includes('flask-* orders-* users-*')
+            traits {
+
+                // Discover branches
+                gitHubBranchDiscovery {
+                    strategyId(1)
+                }
+
+                // Only build develop branch
+                headWildcardFilter {
+                    includes('develop')
+                    excludes('')
+                }
+
+                // Only discover repos matching patterns
+                sourceWildcardFilter {
+                    includes('*flask* orders-* users-*')
+                    excludes('')
+                }
+
+            }
         }
     }
 
@@ -18,9 +37,35 @@ multibranchPipelineJob('QA_Apps') {
         }
     }
 
-    factory {
-        workflowBranchProjectFactory {
-            scriptPath('Jenkinsfile')
-        }
-    }
 }
+
+
+
+
+// multibranchPipelineJob('QA_Apps') {
+//     description('QA pipelines for all application repositories')
+
+//     branchSources {
+//         git {
+//             id('qa-apps')
+//             repoOwner('krimeshshah')
+//             repository('python-flaskapp')
+//             credentialsId('github-pat')
+//             // Limit repos Jenkins will scan
+//             includes('*flask* orders-* users-*')
+//         }
+//     }
+
+//     factory {
+//         workflowBranchProjectFactory {
+//             scriptPath('Jenkinsfile')
+//         }
+//     }
+
+//     orphanedItemStrategy {
+//         discardOldItems {
+//             numToKeep(20)
+//         }
+//     }
+    
+// }

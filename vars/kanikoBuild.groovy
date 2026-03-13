@@ -11,7 +11,8 @@ def call(Map config = [:]) {
             --context ${context} \
             --dockerfile ${dockerfile} \
             --destination ${image}:${tag} \
-            --cache=true
+            --cache=true \
+            --cache-dir=/kaniko/cache
         """
     }
 }

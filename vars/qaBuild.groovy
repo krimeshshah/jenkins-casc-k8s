@@ -4,9 +4,9 @@ def call(Map args) {
     def branch    = args.branch ?: 'master'
     def imageRepo = args.imageRepo
 
-    stage('Checkout') {
-        git branch: branch, url: repoUrl
-    }
+    // stage('Checkout') {
+    //     git branch: branch, url: repoUrl
+    // }
 
     stage('Get Image Tag') {
         def tag = utils.getShortCommitSha()

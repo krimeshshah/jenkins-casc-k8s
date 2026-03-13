@@ -31,13 +31,9 @@ jenkins:
                 resourceLimitCpu: "500m"
                 resourceLimitMemory: "512Mi"
               - name: "kaniko"
-                label: "kaniko"
                 # image: "gcr.io/kaniko-project/executor:latest"
                 image: "gcr.io/kaniko-project/executor:debug"
                 command: "cat"
-                # image: "kaniko:1.0.0"
-                # command: "/kaniko/executor"
-                # args: "--dockerfile /home/jenkins/agent/Dockerfile --context /home/jenkins/agent --no-push"
                 ttyEnabled: true
                 resourceRequestCpu: "100m"
                 resourceRequestMemory: "100Mi"

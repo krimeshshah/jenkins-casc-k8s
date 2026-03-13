@@ -12,10 +12,12 @@ def call(Map config = [:]) {
             --dockerfile ${dockerfile} \
             --destination ${image}:${tag} \
             --cache=true \
-            --cache-dir=/kaniko/cache \
+            --cache-repo registry.kube-system/python-flaskapp-cache \
             --insecure \
             --skip-tls-verify \
             --insecure-registry registry.kube-system
+            --snapshot-mode=redo
+            --use-new-run
         """
     }
 }

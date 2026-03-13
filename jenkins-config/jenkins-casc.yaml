@@ -36,9 +36,9 @@ jenkins:
                 command: "cat"
                 ttyEnabled: true
                 resourceRequestCpu: "100m"
-                resourceRequestMemory: "100Mi"
+                resourceRequestMemory: "500Mi"
                 resourceLimitCpu: "256m"
-                resourceLimitMemory: "256Mi"
+                resourceLimitMemory: "1Gi"
                 privileged: false # Kaniko runs without privileged mode
                 envVars:
                   - envVar:

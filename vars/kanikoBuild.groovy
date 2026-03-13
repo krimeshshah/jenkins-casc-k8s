@@ -15,8 +15,8 @@ def call(Map config = [:]) {
             --cache-repo registry.kube-system/python-flaskapp-cache \
             --insecure \
             --skip-tls-verify \
-            --insecure-registry registry.kube-system
-            --snapshot-mode=redo
+            --insecure-registry registry.kube-system \
+            --snapshot-mode=redo \
             --use-new-run
         """
     }

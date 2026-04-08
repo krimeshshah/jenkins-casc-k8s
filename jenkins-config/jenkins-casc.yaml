@@ -30,9 +30,30 @@ jenkins:
                 resourceRequestMemory: "256Mi"
                 resourceLimitCpu: "500m"
                 resourceLimitMemory: "512Mi"
-            # volumes:
-            #   - emptyDirVolume:
-            #       mountPath: "/home/jenkins/agent"
+              - name: "kaniko"
+                # image: "gcr.io/kaniko-project/executor:latest"
+                image: "kaniko:1.0.0"
+                command: "/kaniko/executor"
+                args: "--dockerfile /home/jenkins/agent/Dockerfile --context /home/jenkins/agent --no-push"
+                ttyEnabled: true
+                resourceRequestCpu: "100m"
+                resourceRequestMemory: "100Mi"
+                resourceLimitCpu: "256m"
+                resourceLimitMemory: "256Mi"
+                privileged: false # Kaniko runs without privileged mode
+                envVars:
+                  - envVar:
+                      key: "DOCKER_CONFIG"
+                      value: "/kaniko/.docker"
+            volumes:
+              - emptyDirVolume:
+                  mountPath: "/home/jenkins/agent"
+              - configMapVolume:
+                  mountPath: "/home/jenkins/agent"
+                  configMapName: "dummy-dockerfile"
+              - secretVolume:
+                  mountPath: "/kaniko/.docker"
+                  secretName: "ecr-docker-config"
             idleMinutes: 5
             instanceCap: 5
 
